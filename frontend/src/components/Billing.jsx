@@ -1,21 +1,75 @@
-import React, { useState } from 'react'
-import { SiPhonepe } from "react-icons/si";
+import React, { useEffect, useState } from 'react'
+import axios from 'axios'
+// import { SiPhonepe } from "react-icons/si";
 import ReactDOMServer from 'react-dom/server'; // Add this import
 
 const Billing = () => {
-
+  const [Loader ,setloader]=useState(false)
   const [cName , setcName]=useState(null)
   const [Persons , setPersons]=useState(null)
   const [Contact , setContact]=useState(null)
-  const [Nights , setNights]=useState(null)
+  const [days , setdays]=useState(null)
   const [Check_In , setCheck_In]=useState(null)
   const [Check_out , setCheck_out]=useState(null)
   const [GST , setGST]=useState(null)
   const [Activities , setActivities]=useState(null)
+  const [amount , setamount]=useState(null)
   const [Amenities , setAmenities]=useState(null)
   const [Food_Cost , setFood_Cost]=useState(null)
   const [selectedPaymentMethod , setselectedPaymentMethod]=useState(null)
-  const [Advance_payment , setAdvance_payment]=useState(null)
+  const [selecteAdvancedPayment , setselecteAdvancedPayment]=useState(false)
+  const [Advance_payment , setAdvance_payment]=useState(0)
+  const [SaveBill , setSaveBill]=useState(0)
+
+  const data ={
+ customerName:cName,
+   
+  // customerEmail: Contact,
+  customerPhone: Contact,
+  totalCustomer: Persons,
+  activity: Activities,
+  extraAmenity: Amenities,
+  foodCost: Food_Cost,
+  advancePayment: Advance_payment,
+  customerGstNumber: GST,
+  checkInDate: Check_In,
+  checkOutDate: Check_out,
+  totalCost:amount,
+  modeOfPayment: selectedPaymentMethod
+  }
+
+
+  const submit=()=>{
+    console.log(data)
+    setloader(true)
+    try {
+      axios.post(`http://localhost:8080/bill/save/${amount}/${days}`,data)
+      .then((response)=>{
+        console.log(response)
+        setSaveBill(response.data.data)
+      
+      })
+      
+    } catch (error) {
+      console.log(error)  
+    } finally {
+      setloader(false)
+    }
+  }
+
+  React.useEffect(() => {
+    if (SaveBill) {
+      handlePrint();
+    }
+  }, [SaveBill]);
+
+  const handleCheckboxChange = () => {
+    const confirm = document.getElementById("advance");
+    if (confirm) {
+      setselecteAdvancedPayment(confirm.checked);
+    }
+  };
+
 
 
 
@@ -23,27 +77,29 @@ const Billing = () => {
     const printWindow = window.open();
 
     
-
+    if (printWindow) {
+      
     const content = (
 
       <html>
         <head>
-          <title>Invoice</title>
+          <title>{SaveBill.invoiceNumber}__{SaveBill.customerName}</title>
           {/* <link rel="stylesheet" type="text/css" href="printstyle.css" /> */}
           <style>
 
           </style>
         </head>
         <body style={{ page: 'A4' }}>
-          <div className="printable-content" style={{border:'2px solid black', padding:"10px",height:"95vh"}}>
+          <div className="printable-content" style={{border:'2px solid black', padding:"10px",height:"90vh"}}>
             <div style={{ display: 'flex', justifyContent: 'space-between' }}>
               <div>
 
               <img style={{ width: '80%', height: '80%' }} src="king_logo.png" alt='not found' />
               </div>
               <div style={{border:"1px solid black", marginTop:"3%", borderRadius:'10px', width:"200px", height:"80px"}}>
-                  <p style={{textAlign:'center'}}>Invoice No: 1345</p>
-                  <p style={{textAlign:'center'}}>Date: 13/05/2023</p>
+                  <p style={{textAlign:'center'}}>{SaveBill.invoiceNumber}</p>
+                  <p style={{textAlign:'center'}}>{SaveBill.localDate}</p>
+
               </div>
               
             
@@ -62,9 +118,9 @@ const Billing = () => {
 
               <div >
               <h2>Bill to</h2>
-              <h3 style={{marginTop:"-20px"}}>Sami Badami <span style={{opacity:"50%"}}>+4 Persons</span></h3>
-              <h4 style={{marginTop:"-20px",opacity:"50%"}}>Gst 74859632</h4>
-              <h4 style={{marginTop:"-20px",opacity:"50%"}}>Contact Details</h4>
+              <h3 style={{marginTop:"-20px"}}>{SaveBill.customerName}<span style={{opacity:"50%"}}>  + {SaveBill.totalCustomer - 1} Persons</span></h3>
+              <h4 style={{marginTop:"-20px",opacity:"50%"}}>{SaveBill.customerGstNumber}</h4>
+              <h4 style={{marginTop:"-20px",opacity:"50%"}}>{SaveBill.customerPhone}</h4>
                 
               </div>
 
@@ -100,26 +156,26 @@ const Billing = () => {
                 <tr style={{height:'50px'}}>
                   <th>02</th>
                   <th style={{width:"70%",textAlign:'start'}}>Activities</th>
-                  <th>94</th>
+                  <th>{SaveBill.activity}</th>
                 </tr>
 
                 <tr style={{height:'50px'}}>
                   <th>03</th>
                   <th style={{width:"70%",textAlign:'start'}}>Food & Beverages </th>
-                  <th>94</th>
+                  <th>{SaveBill.foodCost}</th>
                 </tr>
               </table>
               </div>
             </div>
 
             <div style={{ border:'1px solid black', borderRadius:'5px',marginTop:'5%' }}>
-                <h3 style={{color:'#7F0707'}}>Amount Payable <span style={{opacity:'50%',color:'black',marginLeft:'60%'}}>Sub Total</span><span style={{color:'black',marginLeft:"5px"}}>2,197</span></h3>
-                <h3 ><span style={{opacity:'50%',color:'black',marginLeft:'77%'}}>Grand Total</span><span style={{color:'black',marginLeft:"5px"}}>2,197</span></h3>
+                <h3 style={{color:'#7F0707'}}>Amount Payable <span style={{opacity:'50%',color:'black',marginLeft:'60%'}}>Sub Total</span><span style={{color:'black',marginLeft:"5px"}}>{SaveBill.totalCost}</span></h3>
+                <h3 ><span style={{opacity:'50%',color:'black',marginLeft:'77%'}}>Grand Total</span><span style={{color:'black',marginLeft:"5px"}}>{SaveBill.totalCost}</span></h3>
 
             </div>
 
             <div>
-            <h3>Payment Details <span style={{marginLeft:'70%'}}>Cash</span></h3>
+            <h3>Payment Type <span style={{marginLeft:'70%'}}>{SaveBill.modeOfPayment}</span></h3>
             {/* <h3>Bank Details/Other</h3> */}
             </div>
           </div>
@@ -132,6 +188,7 @@ const Billing = () => {
     printWindow.document.close();
 
     printWindow.print();
+    }
   };
   
 
@@ -172,35 +229,35 @@ const Billing = () => {
 <div className=' container d-flex justify-content-start'>
     <span style={{background:'#F5DEC399' , padding:'6px 35px', borderRadius:'17px', marginRight:'15px'}}>Name</span>
     
-    <input type='text' value={cName} onChange={(e)=>setcName(e.target.value)} style={{width:'50%', border:'1px solid black' ,borderRadius:'10px'}}/>
+    <input type='text' value={cName} onChange={(e)=>setcName(e.target.value)} style={{width:'50%', border:'1px solid black' ,borderRadius:'10px',padding:'0 5px'}}/>
 
     <span  style={{background:'#F5DEC399' , padding:'6px 35px', borderRadius:'17px', marginRight:'15px',marginLeft:'15px'}}>Persons</span>
     
-    <input type='text' value={Persons} onChange={(e)=>setPersons(e.target.value)} style={{width:'20%', border:'1px solid black' ,borderRadius:'10px'}}/>
+    <input type='text' value={Persons} onChange={(e)=>setPersons(e.target.value)} style={{width:'20%', border:'1px solid black' ,borderRadius:'10px',padding:'0 5px'}}/>
 </div>
 
 <div className=' container d-flex justify-content-start mt-5'>
     <span style={{background:'#F5DEC399' , padding:'6px 30px', borderRadius:'17px', marginRight:'12px'}}>Contact</span>
     
-    <input type='text' value={Contact} onChange={(e)=>setContact(e.target.value)} style={{width:'50%', border:'1px solid black' ,borderRadius:'10px'}}/>
+    <input type='text' value={Contact} onChange={(e)=>setContact(e.target.value)} style={{width:'50%', border:'1px solid black' ,borderRadius:'10px',padding:'0 5px'}}/>
 
-    <span style={{background:'#F5DEC399' , padding:'6px 35px', borderRadius:'17px', marginRight:'21px',marginLeft:'15px'}}>Nights</span>
+    <span style={{background:'#F5DEC399' , padding:'6px 35px', borderRadius:'17px', marginRight:'21px',marginLeft:'15px'}}>Days</span>
     
-    <input type='text' value={Nights} onChange={(e)=>setNights(e.target.value)} style={{width:'10%', border:'1px solid black' ,borderRadius:'10px'}}/>
+    <input type='text' value={days} onChange={(e)=>setdays(e.target.value)} style={{width:'10%', border:'1px solid black' ,borderRadius:'10px',padding:'0 5px'}}/>
 </div>
 
 <div className=' container d-flex justify-content-start mt-5'>
     <span style={{background:'#F5DEC399' , padding:'6px 28px', borderRadius:'17px', marginRight:'12px'}}>Check In</span>
     
-    <input type='date' value={Check_In} onChange={(e)=>setCheck_In(e.target.value)} style={{width:'18%', border:'1px solid black' ,borderRadius:'10px',padding:"2px"}}/>
+    <input type='date' value={Check_In} onChange={(e)=>setCheck_In(e.target.value)} style={{width:'18%', border:'1px solid black' ,borderRadius:'10px',padding:"2px",padding:'0 5px'}}/>
 
     <span style={{background:'#F5DEC399' , padding:'6px 35px', borderRadius:'17px', marginRight:'15px',marginLeft:'15px'}}>Check out</span>
     
-    <input type='date' value={Check_out} onChange={(e)=>setCheck_out(e.target.value)} style={{width:'19%', border:'1px solid black' ,borderRadius:'10px',padding:"2px"}}/>
+    <input type='date' value={Check_out} onChange={(e)=>setCheck_out(e.target.value)} style={{width:'19%', border:'1px solid black' ,borderRadius:'10px',padding:"2px",padding:'0 5px'}}/>
 
     <span style={{background:'#F5DEC399' , padding:'6px 35px', borderRadius:'17px', marginRight:'15px',marginLeft:'15px'}}>GST</span>
     
-    <input type='text' value={GST} onChange={(e)=>setGST(e.target.value)} style={{width:'19%', border:'1px solid black' ,borderRadius:'10px'}}/>
+    <input type='text' value={GST} onChange={(e)=>setGST(e.target.value)} style={{width:'19%', border:'1px solid black' ,borderRadius:'10px',padding:'0 5px'}}/>
 </div>
 
 <div class="max-w-screen-xl flex flex-wrap items-center  mx-auto mt-5 mb-4">
@@ -212,17 +269,21 @@ const Billing = () => {
 <div className=' container d-flex justify-content-start '>
     <span style={{background:'#F5DEC399' , padding:'6px 27px', borderRadius:'17px', marginRight:'15px'}}>Activities</span>
     
-    <input type='text' value={Activities} onChange={(e)=>setActivities(e.target.value)} style={{width:'18%', border:'1px solid black' ,borderRadius:'10px'}}/>
+    <input type='text' value={Activities} onChange={(e)=>setActivities(e.target.value)} style={{width:'18%', border:'1px solid black' ,borderRadius:'10px',padding:'0 5px'}}/>
 
     <span style={{background:'#F5DEC399' , padding:'6px 30px', borderRadius:'14px', marginRight:'15px',marginLeft:'15px'}}>Amenities</span>
     
-    <input type='text' value={Amenities} onChange={(e)=>setAmenities(e.target.value)} style={{width:'20%', border:'1px solid black' ,borderRadius:'10px'}}/>
+    <input type='text' value={Amenities} onChange={(e)=>setAmenities(e.target.value)} style={{width:'20%', border:'1px solid black' ,borderRadius:'10px',padding:'0 5px'}}/>
 </div>
 
 <div className=' container d-flex justify-content-start mt-5'>
     <span style={{background:'#F5DEC399' , padding:'6px 24px', borderRadius:'15px', marginRight:'15px'}}>Food Cost</span>
     
-    <input type='text' value={Food_Cost} onChange={(e)=>setFood_Cost(e.target.value)} style={{width:'18%', border:'1px solid black' ,borderRadius:'10px'}}/>
+    <input type='text' value={Food_Cost} onChange={(e)=>setFood_Cost(e.target.value)} style={{width:'18%', border:'1px solid black' ,borderRadius:'10px',padding:'0 5px'}}/>
+
+    <span style={{background:'#F5DEC399' , padding:'6px 24px', borderRadius:'15px', marginRight:'12px', marginLeft:'15px'}}>Amount Per Head</span>
+    
+    <input type='text' value={amount} onChange={(e)=>setamount(e.target.value)} style={{width:'17%', border:'1px solid black' ,borderRadius:'10px',padding:'0 5px'}}/>
 
 </div>
 
@@ -234,8 +295,8 @@ const Billing = () => {
 <div className=' container d-flex justify-content-between '>
     
     
-    <input type='radio' checked={selectedPaymentMethod === 'Phonepe'} onChange={(e)=>setselectedPaymentMethod(e.target.value)} name='paymentMethod' value='Phonepe' style={{width:'5%', border:'1px solid black' ,borderRadius:'10px',marginLeft:'5px'}}/>
-    <span style={{ fontSize:'30px',color:"#6739B7", marginLeft:'-42%'}}>< SiPhonepe /></span>
+    <input type='radio' checked={selectedPaymentMethod === 'UPI'} onChange={(e)=>setselectedPaymentMethod(e.target.value)} name='paymentMethod' value='UPI' style={{width:'5%', border:'1px solid black' ,borderRadius:'10px',marginLeft:'5px'}}/>
+    <span style={{ fontSize:'30px',color:"#6739B7", marginLeft:'-42%'}}><img src='Banner15.webp' style={{height:'30px', width:'90px'}} /></span>
 
     
     <input type='radio' checked={selectedPaymentMethod === 'Cash'} onChange={(e)=>setselectedPaymentMethod(e.target.value)} name='paymentMethod' value='Cash' style={{width:'5%', border:'1px solid black' ,borderRadius:'10px',marginLeft:'-35%'}}/>
@@ -248,17 +309,17 @@ const Billing = () => {
 
     
 
-    <input type='radio' checked={selectedPaymentMethod === 'Advance_Payment'} onChange={(e)=>setselectedPaymentMethod(e.target.value)} name='paymentMethod' value='Advance_Payment' style={{width:'4%', border:'1px solid black' ,borderRadius:'10px'}}/>
+    <input type='checkbox' id='advance' onChange={handleCheckboxChange} style={{width:'1%', border:'1px solid black' ,borderRadius:'10px'}}/>
     <span style={{marginLeft:'-42%'}} >Advance Payment</span>
     
 </div>
 
 <div className='container mt-5 d-flex justify-content-end'>
 {
-      selectedPaymentMethod === 'Advance_Payment'   && (
+      selecteAdvancedPayment   && (
         <>
         <span style={{background:'#F5DEC399' , padding:'6px 35px', borderRadius:'17px', marginRight:'15px'}}>Enter Amount</span>
-        <input value={Advance_payment} onChange={(e)=>setAdvance_payment(e.target.value)} type='text' style={{width:'18%', border:'1px solid black' ,borderRadius:'10px'}}/>
+        <input value={Advance_payment} onChange={(e)=>setAdvance_payment(e.target.value)} type='text' style={{width:'18%', border:'1px solid black' ,borderRadius:'10px',padding:'0 5px'}}/>
         </>
       )
     }
@@ -266,7 +327,7 @@ const Billing = () => {
 
 <div className='container mt-5'>
 
-<button className='btn' onClick={handlePrint} style={{background:'#7F0707', color:'white'}}>Generate Bill</button>
+<button className='btn' onClick={submit} style={{background:'#7F0707', color:'white'}}>Generate Bill</button>
 </div>
 
 
