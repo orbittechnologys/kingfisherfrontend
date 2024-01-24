@@ -1,7 +1,9 @@
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import axios from 'axios'
 // import { SiPhonepe } from "react-icons/si";
 import ReactDOMServer from 'react-dom/server'; // Add this import
+import { Link, useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const Billing = () => {
   const [Loader ,setloader]=useState(false)
@@ -18,8 +20,26 @@ const Billing = () => {
   const [Food_Cost , setFood_Cost]=useState(null)
   const [selectedPaymentMethod , setselectedPaymentMethod]=useState(null)
   const [selecteAdvancedPayment , setselecteAdvancedPayment]=useState(false)
-  const [Advance_payment , setAdvance_payment]=useState(0)
+  
+  const [Advance_payment , setAdvance_payment]=useState(null)
   const [SaveBill , setSaveBill]=useState(0)
+
+  const location = useLocation()
+
+  let today = new Date();
+  let dd = today.getDate();
+  let mm = today.getMonth() + 1;
+  let yy = today.getFullYear()
+  let cdate =  dd+ "-" + mm + "-" +yy ;
+
+  const Navigate = useNavigate()
+
+  const logout =()=>{
+    localStorage.clear()
+    Navigate('/')
+}
+
+// const gstAmount = (SaveBill.totalCost) - (SaveBill.grandTotal) 
 
   const data ={
  customerName:cName,
@@ -150,7 +170,7 @@ const Billing = () => {
                 <tr style={{height:'50px'}}>
                   <th>01</th>
                   <th style={{width:"70%",textAlign:'start'}}>Package Charges</th>
-                  <th>50</th>
+                  <th>{SaveBill.packageCost}</th>
                 </tr>
               
                 <tr style={{height:'50px'}}>
@@ -164,13 +184,30 @@ const Billing = () => {
                   <th style={{width:"70%",textAlign:'start'}}>Food & Beverages </th>
                   <th>{SaveBill.foodCost}</th>
                 </tr>
+
+                <tr style={{height:'50px'}}>
+                  <th>04</th>
+                  <th style={{width:"70%",textAlign:'start'}}>Amenities </th>
+                  <th>{SaveBill.extraAmenity}</th>
+                </tr>
               </table>
               </div>
             </div>
 
             <div style={{ border:'1px solid black', borderRadius:'5px',marginTop:'5%' }}>
-                <h3 style={{color:'#7F0707'}}>Amount Payable <span style={{opacity:'50%',color:'black',marginLeft:'60%'}}>Sub Total</span><span style={{color:'black',marginLeft:"5px"}}>{SaveBill.totalCost}</span></h3>
-                <h3 ><span style={{opacity:'50%',color:'black',marginLeft:'77%'}}>Grand Total</span><span style={{color:'black',marginLeft:"5px"}}>{SaveBill.totalCost}</span></h3>
+                <h3 style={{color:'#7F0707'}}>Amount Payable </h3>
+                {/* <h3 ><span style={{opacity:'50%',color:'black'}}>18% Gst</span><span style={{opacity:'50%',color:'black'}}>Sub Total</span><span style={{color:'black',marginLeft:"5px"}}>{SaveBill.totalCost}</span></h3> */}
+                
+            
+                    
+                    <h3 ><span style={{opacity:'50%',color:'black'}}>AdvancePayment</span><span style={{color:'black',marginLeft:"70%"}}>{SaveBill.advancePayment !== 'null' ? SaveBill.advancePayment : <p>---</p>}</span></h3>
+                  
+                  <h3 ><span style={{opacity:'50%',color:'black',marginLeft:'5px'}}>Sub Total</span><span style={{color:'black',marginLeft:"78%"}}>{SaveBill.totalCost}</span></h3>
+                
+                {/* <h3 ><span style={{opacity:'50%',color:'black'}}>18% Gst</span><span style={{color:'black',marginLeft:"80%"}}>{gstAmount}</span></h3> */}
+                <h3 ><span style={{opacity:'50%',color:'black',marginTop:'-20px',marginLeft:'5px'}}>Grand Total</span><span style={{color:'black',marginLeft:"75%"}}>{SaveBill.grandTotal}</span></h3>
+                <p style={{opacity:'50%',color:'black',marginLeft:'5px',marginTop:'-20px'}}>GST included</p>
+                
 
             </div>
 
@@ -194,8 +231,8 @@ const Billing = () => {
 
   return (
     <div className='mb-5'>
-      <nav class="border-gray-200 bg-gray-50 dark:bg-gray-800 dark:border-gray-700">
-  <div class="max-w-screen-2xl flex flex-wrap items-center justify-between mx-auto p-2">
+      <nav class="border-gray-200  dark:bg-gray-800 dark:border-gray-700">
+      <div class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto ">
     <p style={{textDecoration:'none'}} class="flex items-center space-x-3 ">
         <img src="./king_logo.png" class="h-14" alt="king Logo" />
         <div>
@@ -211,19 +248,31 @@ const Billing = () => {
     </button>
     <div class="hidden w-full md:block md:w-auto" id="navbar-solid-bg">
       <ul class="flex flex-col font-medium mt-4 rounded-lg bg-gray-50 md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-transparent dark:bg-gray-800 md:dark:bg-transparent dark:border-gray-700">
-        <li>
-            <div>
-                <p class='font-bold'>Date</p>
-            </div>
-          <p  class="block   md:p-0 text-gray-900 rounded text-2xl md:hover:bg-transparent md:border-0  dark:text-white">08/01/2024</p>
+        
+      <li>
+          <Link to='/billing' style={{textDecoration:'none'}} className={`block py-2 px-3 md:p-0 ${location.pathname === '/billing' ? 'text-red-900' : 'text-gray-500'}`}>Billing</Link>
         </li>
+        <li>
+          <Link to='/history' style={{textDecoration:'none'}} className={`block py-2 px-3 md:p-0 ${location.pathname === '/history' ? 'text-red-900' : 'text-gray-500'}`}>History</Link>
+        </li>
+
+        <li className='py-2 px-3'>
+                Date : {cdate}
+        </li>
+
+        <li className='py-2 px-3'>
+                <p className='py-1 px-2' onClick={logout} style={{background:'#7F0707',color:'white', borderRadius:'10px',cursor:'pointer'}}> Logout</p>
+        </li>
+        
       </ul>
     </div>
   </div>
 </nav>
+
+
 <div class="max-w-screen-xl flex flex-wrap items-center  mx-auto p-2">
      <img class="w-10 h-10 rounded shadow-xl px-2.5 py-2.5 ring-1 ring-orange-800 dark:ring-gray-500 " src="./book.png" alt="king Logo" />   
-     <p class=" items-center font-semibold p-2">Customer Details  </p>
+     <p class=" items-center font-semibold p-2 mt-3">Customer Details  </p>
       <hr class="w-96 h-0.5  bg-gray-300 border-0"/>
 </div>
 <div className=' container d-flex justify-content-start'>
@@ -241,7 +290,7 @@ const Billing = () => {
     
     <input type='text' value={Contact} onChange={(e)=>setContact(e.target.value)} style={{width:'50%', border:'1px solid black' ,borderRadius:'10px',padding:'0 5px'}}/>
 
-    <span style={{background:'#F5DEC399' , padding:'6px 35px', borderRadius:'17px', marginRight:'21px',marginLeft:'15px'}}>Days</span>
+    <span style={{background:'#F5DEC399' , padding:'6px 35px', borderRadius:'17px', marginRight:'21px',marginLeft:'15px'}}>Nights</span>
     
     <input type='text' value={days} onChange={(e)=>setdays(e.target.value)} style={{width:'10%', border:'1px solid black' ,borderRadius:'10px',padding:'0 5px'}}/>
 </div>
@@ -249,11 +298,11 @@ const Billing = () => {
 <div className=' container d-flex justify-content-start mt-5'>
     <span style={{background:'#F5DEC399' , padding:'6px 28px', borderRadius:'17px', marginRight:'12px'}}>Check In</span>
     
-    <input type='date' value={Check_In} onChange={(e)=>setCheck_In(e.target.value)} style={{width:'18%', border:'1px solid black' ,borderRadius:'10px',padding:"2px",padding:'0 5px'}}/>
+    <input type='date' value={Check_In} onChange={(e)=>setCheck_In(e.target.value)} style={{width:'18%', border:'1px solid black' ,borderRadius:'10px',padding:'0 5px'}}/>
 
     <span style={{background:'#F5DEC399' , padding:'6px 35px', borderRadius:'17px', marginRight:'15px',marginLeft:'15px'}}>Check out</span>
     
-    <input type='date' value={Check_out} onChange={(e)=>setCheck_out(e.target.value)} style={{width:'19%', border:'1px solid black' ,borderRadius:'10px',padding:"2px",padding:'0 5px'}}/>
+    <input type='date' value={Check_out} onChange={(e)=>setCheck_out(e.target.value)} style={{width:'19%', border:'1px solid black' ,borderRadius:'10px',padding:'0 5px'}}/>
 
     <span style={{background:'#F5DEC399' , padding:'6px 35px', borderRadius:'17px', marginRight:'15px',marginLeft:'15px'}}>GST</span>
     
@@ -262,7 +311,7 @@ const Billing = () => {
 
 <div class="max-w-screen-xl flex flex-wrap items-center  mx-auto mt-5 mb-4">
      <img class="w-10 h-10 rounded shadow-xl px-2.5 py-2.5 ring-1 ring-orange-800 dark:ring-gray-500 " src="./man.png" alt="king Logo" />   
-     <p class=" items-center font-semibold p-2"> Packages & Activities  </p>
+     <p class=" items-center font-semibold p-2 mt-3"> Packages & Activities  </p>
       <hr class="w-96 h-0.5  bg-gray-300 border-0"/>
 </div>
 
@@ -289,7 +338,7 @@ const Billing = () => {
 
 <div class="max-w-screen-xl flex flex-wrap items-center  mx-auto p-2 mt-5 mb-4">
      <img class="w-10 h-10 rounded shadow-xl px-2.5 py-2.5 ring-1 ring-orange-800 dark:ring-gray-500 " src="./payment.png" alt="king Logo" />   
-     <p class=" items-center font-semibold p-2"> Select Payment  </p>
+     <p class=" items-center font-semibold p-2 mt-3"> Select Payment  </p>
       <hr class="w-96 h-0.5  bg-gray-300 border-0"/>
 </div>
 <div className=' container d-flex justify-content-between '>
@@ -327,7 +376,7 @@ const Billing = () => {
 
 <div className='container mt-5'>
 
-<button className='btn' onClick={submit} style={{background:'#7F0707', color:'white'}}>Generate Bill</button>
+<button className='btn' onClick={submit} style={{background:'#7F0707', color:'white'}} disabled={!selectedPaymentMethod}>Generate Bill</button>
 </div>
 
 
