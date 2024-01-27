@@ -40,9 +40,12 @@ const searchCustomers = () => {
         },
       })
       .then((response) => {
+        if(response.data.status === 200){
+          alert("Data Fetched Success")
         setSearchResults(response.data.data);
         setLoading(false);
         setShowSearch(true);
+        }
       })
       .catch((err) => {
         if (err.response && err.response.status === 404) {
@@ -80,8 +83,11 @@ const getAllCommission = () => {
       .get(`http://localhost:8080/bill/getAllBills/${currentpage}/${recordsPerPage}/${selectedvalue}`)
       .then((response) => {
           console.log(response)
-          setCustomer(response.data.data.content);
-          setOffset(response.data.data.totalPages);
+         
+            setCustomer(response.data.data.content);
+            setOffset(response.data.data.totalPages);
+          
+          
          
       })
       .catch((error) => {
@@ -208,10 +214,11 @@ const Billdata = showsearch ? SearchResults : customer;
                                 />
                                 </div>
                             </p>
-                            <p>
-                                <button className='btn btn-warning' style={{ marginRight: '5px', marginLeft: '5px', marginTop:'30%',background:'#7F0707',color:'white'}} onClick={searchCustomers}>
+                            <p className='mt-4'>
+                                <button className='btn btn-warning' style={{ marginRight: '5px', marginLeft: '5px',background:'#7F0707',color:'white'}} onClick={searchCustomers}>
                                     Search
                                 </button>
+                                <button className='btn' onClick={Csvfile_For_Type} style={{background:'#7F0707',color:'white'}}>Generate CSV</button>
                             </p>
                         </div>
   
@@ -219,9 +226,9 @@ const Billdata = showsearch ? SearchResults : customer;
     <div class="self-center text-2xl font-semibold whitespace-nowrap text-red-900 ">
         <p>History</p>
     </div>
-    <div className='flex'>
+    {/* <div className='flex'>
         <button className='btn' onClick={Csvfile_For_Type} style={{background:'#7F0707',color:'white'}}>Generate CSV</button>
-    </div>
+    </div> */}
 </div>
 
 
