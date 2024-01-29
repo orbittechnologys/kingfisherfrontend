@@ -202,10 +202,10 @@ const Billing = () => {
                     
                     <h3 ><span style={{opacity:'50%',color:'black'}}>AdvancePayment</span><span style={{color:'black',marginLeft:"70%"}}>{SaveBill.advancePayment !== 'null' ? SaveBill.advancePayment : <p>---</p>}</span></h3>
                   
-                  <h3 ><span style={{opacity:'50%',color:'black',marginLeft:'5px'}}>Sub Total</span><span style={{color:'black',marginLeft:"78%"}}>{SaveBill.totalCost}</span></h3>
+                  <h3 ><span style={{opacity:'50%',color:'black',marginLeft:'5px'}}>Grand Total</span><span style={{color:'black',marginLeft:"78%"}}>{SaveBill.totalCost}</span></h3>
                 
                 {/* <h3 ><span style={{opacity:'50%',color:'black'}}>18% Gst</span><span style={{color:'black',marginLeft:"80%"}}>{gstAmount}</span></h3> */}
-                <h3 ><span style={{opacity:'50%',color:'black',marginTop:'-20px',marginLeft:'5px'}}>Grand Total</span><span style={{color:'black',marginLeft:"75%"}}>{SaveBill.grandTotal}</span></h3>
+                {/* <h3 ><span style={{opacity:'50%',color:'black',marginTop:'-20px',marginLeft:'5px'}}>Grand Total</span><span style={{color:'black',marginLeft:"75%"}}>{SaveBill.grandTotal}</span></h3> */}
                 <p style={{opacity:'50%',color:'black',marginLeft:'5px',marginTop:'-20px'}}>GST included</p>
                 
 
