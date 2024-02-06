@@ -284,18 +284,52 @@ useEffect(()=>{
      <p class=" items-center font-semibold p-2 mt-3">Customer Details  </p>
       <hr class="w-96 h-0.5  bg-gray-300 border-0"/>
 </div>
-<div className=' container d-flex justify-content-start'>
-    <span className='fw-bold'  style={{background:'#F5DEC399' , padding:'6px 35px', borderRadius:'17px', marginRight:'15px'}}>Name</span>
-    
-    <input type='text' value={cName} onChange={(e)=>setcName(e.target.value)} style={{width:'50%', border:'1px solid black' ,borderRadius:'10px',padding:'0 5px'}}/>
-
-    <label className='fw-bold' style={{background:'#F5DEC399' , padding:'6px 35px', borderRadius:'17px', marginRight:'15px',marginLeft:'15px'}}>Enter the number of Adults</label>
-    <input placeholder='Enter Adults' onChange={(e)=>{setAdults(e.target.value)}} type='number' min={0}/>
-    <label className='fw-bold' style={{background:'#F5DEC399' , padding:'6px 35px', borderRadius:'17px', marginRight:'15px',marginLeft:'15px'}}>Enter the Number  of Kids(Age below 10)</label>
-    <input placeholder='Enter Children' onChange={(e)=>{setKids(e.target.value)}} type='number' min={0} />
-    <label className='fw-bold' style={{background:'#F5DEC399' , padding:'6px 35px', borderRadius:'17px', marginRight:'15px',marginLeft:'15px'}}>Total Number of people</label>
-    <input type='number' min={0} value={Persons} readOnly  style={{width:'20%', border:'1px solid black' ,borderRadius:'10px',padding:'0 5px'}}/>
-</div>
+<div className='container'>
+            <div className='row'>
+                <div className='col-md-12 mb-3'>
+                    <label htmlFor='name' className='fw-bold' style={{ background: '#F5DEC399', padding: '6px 35px', borderRadius: '17px' }}>Name</label>
+                    <input
+                        id='name'
+                        type='text'
+                        value={cName}
+                        onChange={(e) => setcName(e.target.value)}
+                        className='form-control'
+                    />
+                </div>
+                <div className='col-md-6 mb-3'>
+                    <label htmlFor='adults' className='fw-bold' style={{ background: '#F5DEC399', padding: '6px 35px', borderRadius: '17px' }}>Enter the number of Adults</label>
+                    <input
+                        id='adults'
+                        placeholder='Enter Adults'
+                        onChange={(e) => setAdults(e.target.value)}
+                        type='number'
+                        min={0}
+                        className='form-control'
+                    />
+                </div>
+                <div className='col-md-6 mb-3'>
+                    <label htmlFor='kids' className='fw-bold' style={{ background: '#F5DEC399', padding: '6px 35px', borderRadius: '17px' }}>Enter the Number of Kids (Age below 10)</label>
+                    <input
+                        id='kids'
+                        placeholder='Enter Children'
+                        onChange={(e) => setKids(e.target.value)}
+                        type='number'
+                        min={0}
+                        className='form-control'
+                    />
+                </div>
+                <div className='col-md-12'>
+                    <label className='fw-bold' style={{ background: '#F5DEC399', padding: '6px 35px', borderRadius: '17px' }}>Total Number of people</label>
+                    <input
+                        type='number'
+                        value={Persons}
+                        readOnly
+                        className='form-control'
+                        style={{ width: '20%', border: '1px solid black', borderRadius: '10px', padding: '0 5px' }}
+                    />
+                </div>
+            </div>
+        </div>
 
 <div className=' container d-flex justify-content-start mt-5'>
     <span className='fw-bold'  style={{background:'#F5DEC399' , padding:'6px 30px', borderRadius:'17px', marginRight:'12px'}}>Contact</span>
