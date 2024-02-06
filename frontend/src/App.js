@@ -15,13 +15,13 @@ import { useEffect, useState } from "react";
 
 function App() {
 
-  // const initialLoginStatus = localStorage.getItem('isLoggedIn') === 'true';
-  // const [isLoggedIn, setIsLoggedIn] = useState(initialLoginStatus)'
-  const [isLoggedIn,setIsLoggedIn] = useState(true)
+  const initialLoginStatus = localStorage.getItem('isLoggedIn') === 'true';
+  const [isLoggedIn, setIsLoggedIn] = useState(initialLoginStatus)
+  // const [isLoggedIn,setIsLoggedIn] = useState(true)
 
-  // useEffect(() => {
-  //   localStorage.setItem('isLoggedIn', isLoggedIn)
-  // }, [isLoggedIn])
+  useEffect(() => {
+    localStorage.setItem('isLoggedIn', isLoggedIn)
+  }, [isLoggedIn])
 
   return (
     <div className="App">
