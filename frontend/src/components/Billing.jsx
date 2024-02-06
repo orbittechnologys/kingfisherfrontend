@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 // import { SiPhonepe } from "react-icons/si";
 import ReactDOMServer from 'react-dom/server'; // Add this import
@@ -8,7 +8,7 @@ import { useNavigate } from 'react-router-dom';
 const Billing = () => {
   const [Loader ,setloader]=useState(false)
   const [cName , setcName]=useState(null)
-  const [Persons , setPersons]=useState(null)
+  const [Persons , setPersons]=useState(0)
   const [Contact , setContact]=useState(null)
   const [days , setdays]=useState(null)
   const [Check_In , setCheck_In]=useState(null)
@@ -20,6 +20,8 @@ const Billing = () => {
   const [Food_Cost , setFood_Cost]=useState(null)
   const [selectedPaymentMethod , setselectedPaymentMethod]=useState(null)
   const [selecteAdvancedPayment , setselecteAdvancedPayment]=useState(false)
+  const [adults, setAdults] = useState(0)
+  const [kids, setKids] =useState(0)
   
   const [Advance_payment , setAdvance_payment]=useState(null)
   const [SaveBill , setSaveBill]=useState(0)
@@ -31,6 +33,7 @@ const Billing = () => {
   let mm = today.getMonth() + 1;
   let yy = today.getFullYear()
   let cdate =  dd+ "-" + mm + "-" +yy ;
+  let persons= 0;
 
   const Navigate = useNavigate()
 
@@ -63,7 +66,7 @@ const Billing = () => {
     console.log(data)
     setloader(true)
     try {
-      axios.post(`http://localhost:8080/bill/save/${amount}/${days}`,data)
+      axios.post(`http://localhost:8080/bill/save/${amount}/${days}/${kids}`,data)
       .then((response)=>{
         console.log(response)
         setSaveBill(response.data.data)
@@ -90,6 +93,10 @@ const Billing = () => {
     }
   };
 
+useEffect(()=>{
+  console.log(typeof(adults),typeof(kids))
+  setPersons(Number(adults)+Number(kids))
+}, [adults, kids])
 
 
 
@@ -128,7 +135,7 @@ const Billing = () => {
               <div >
               <h2 style={{color:'#7F0707'}}>Kingfisher Jungle Stay</h2>
               <h3 style={{marginTop:"-20px"}} class="self-center text-2xl font-bold">Dandeli</h3>
-              <h3 style={{marginTop:"-20px"}} class="self-center text-2xl font-bold">GST Nubmber</h3>
+              <h3 style={{marginTop:"-20px"}} class="self-center text-2xl font-bold">GST Number</h3>
               <h4 style={{marginTop:"-20px"}} class="self-center text-2xl ">Contact No :</h4>
                 SKINGFISHER JUNGLE STAY  <br />
                 BAMANGI, RESORT SY. NO 63,  <br />
@@ -139,6 +146,8 @@ const Billing = () => {
               <div >
               <h2>Bill to</h2>
               <h3 style={{marginTop:"-20px"}}>{SaveBill.customerName}<span style={{opacity:"50%"}}>  + {SaveBill.totalCustomer - 1} Persons</span></h3>
+              <h3 style={{marginTop:"-20px"}}>{SaveBill.customerName}<span style={{opacity:"50%"}}>  + {kids} Kids</span></h3>
+              <h3 style={{marginTop:"-20px"}}>{SaveBill.customerName}<span style={{opacity:"50%"}}>  + {adults} Adults</span></h3>
               <h4 style={{marginTop:"-20px",opacity:"50%"}}>{SaveBill.customerGstNumber}</h4>
               <h4 style={{marginTop:"-20px",opacity:"50%"}}>{SaveBill.customerPhone}</h4>
                 
@@ -276,35 +285,38 @@ const Billing = () => {
       <hr class="w-96 h-0.5  bg-gray-300 border-0"/>
 </div>
 <div className=' container d-flex justify-content-start'>
-    <span style={{background:'#F5DEC399' , padding:'6px 35px', borderRadius:'17px', marginRight:'15px'}}>Name</span>
+    <span className='fw-bold'  style={{background:'#F5DEC399' , padding:'6px 35px', borderRadius:'17px', marginRight:'15px'}}>Name</span>
     
     <input type='text' value={cName} onChange={(e)=>setcName(e.target.value)} style={{width:'50%', border:'1px solid black' ,borderRadius:'10px',padding:'0 5px'}}/>
 
-    <span  style={{background:'#F5DEC399' , padding:'6px 35px', borderRadius:'17px', marginRight:'15px',marginLeft:'15px'}}>Persons</span>
-    
-    <input type='text' value={Persons} onChange={(e)=>setPersons(e.target.value)} style={{width:'20%', border:'1px solid black' ,borderRadius:'10px',padding:'0 5px'}}/>
+    <label className='fw-bold' style={{background:'#F5DEC399' , padding:'6px 35px', borderRadius:'17px', marginRight:'15px',marginLeft:'15px'}}>Enter the number of Adults</label>
+    <input placeholder='Enter Adults' onChange={(e)=>{setAdults(e.target.value)}} type='number' min={0}/>
+    <label className='fw-bold' style={{background:'#F5DEC399' , padding:'6px 35px', borderRadius:'17px', marginRight:'15px',marginLeft:'15px'}}>Enter the Number  of Kids(Age below 10)</label>
+    <input placeholder='Enter Children' onChange={(e)=>{setKids(e.target.value)}} type='number' min={0} />
+    <label className='fw-bold' style={{background:'#F5DEC399' , padding:'6px 35px', borderRadius:'17px', marginRight:'15px',marginLeft:'15px'}}>Total Number of people</label>
+    <input type='number' min={0} value={Persons} readOnly  style={{width:'20%', border:'1px solid black' ,borderRadius:'10px',padding:'0 5px'}}/>
 </div>
 
 <div className=' container d-flex justify-content-start mt-5'>
-    <span style={{background:'#F5DEC399' , padding:'6px 30px', borderRadius:'17px', marginRight:'12px'}}>Contact</span>
+    <span className='fw-bold'  style={{background:'#F5DEC399' , padding:'6px 30px', borderRadius:'17px', marginRight:'12px'}}>Contact</span>
     
     <input type='text' value={Contact} onChange={(e)=>setContact(e.target.value)} style={{width:'50%', border:'1px solid black' ,borderRadius:'10px',padding:'0 5px'}}/>
 
-    <span style={{background:'#F5DEC399' , padding:'6px 35px', borderRadius:'17px', marginRight:'21px',marginLeft:'15px'}}>Nights</span>
+    <span className='fw-bold'  style={{background:'#F5DEC399' , padding:'6px 35px', borderRadius:'17px', marginRight:'21px',marginLeft:'15px'}}>Nights</span>
     
     <input type='text' value={days} onChange={(e)=>setdays(e.target.value)} style={{width:'10%', border:'1px solid black' ,borderRadius:'10px',padding:'0 5px'}}/>
 </div>
 
 <div className=' container d-flex justify-content-start mt-5'>
-    <span style={{background:'#F5DEC399' , padding:'6px 28px', borderRadius:'17px', marginRight:'12px'}}>Check In</span>
+    <span className='fw-bold'  style={{background:'#F5DEC399' , padding:'6px 28px', borderRadius:'17px', marginRight:'12px'}}>Check In</span>
     
     <input type='date' value={Check_In} onChange={(e)=>setCheck_In(e.target.value)} style={{width:'18%', border:'1px solid black' ,borderRadius:'10px',padding:'0 5px'}}/>
 
-    <span style={{background:'#F5DEC399' , padding:'6px 35px', borderRadius:'17px', marginRight:'15px',marginLeft:'15px'}}>Check out</span>
+    <span className='fw-bold'  style={{background:'#F5DEC399' , padding:'6px 35px', borderRadius:'17px', marginRight:'15px',marginLeft:'15px'}}>Check out</span>
     
     <input type='date' value={Check_out} onChange={(e)=>setCheck_out(e.target.value)} style={{width:'19%', border:'1px solid black' ,borderRadius:'10px',padding:'0 5px'}}/>
 
-    <span style={{background:'#F5DEC399' , padding:'6px 35px', borderRadius:'17px', marginRight:'15px',marginLeft:'15px'}}>GST</span>
+    <span className='fw-bold'  style={{background:'#F5DEC399' , padding:'6px 35px', borderRadius:'17px', marginRight:'15px',marginLeft:'15px'}}>GST</span>
     
     <input type='text' value={GST} onChange={(e)=>setGST(e.target.value)} style={{width:'19%', border:'1px solid black' ,borderRadius:'10px',padding:'0 5px'}}/>
 </div>
@@ -316,21 +328,21 @@ const Billing = () => {
 </div>
 
 <div className=' container d-flex justify-content-start '>
-    <span style={{background:'#F5DEC399' , padding:'6px 27px', borderRadius:'17px', marginRight:'15px'}}>Activities</span>
+    <span className='fw-bold'  style={{background:'#F5DEC399' , padding:'6px 27px', borderRadius:'17px', marginRight:'15px'}}>Activities</span>
     
     <input type='text' value={Activities} onChange={(e)=>setActivities(e.target.value)} style={{width:'18%', border:'1px solid black' ,borderRadius:'10px',padding:'0 5px'}}/>
 
-    <span style={{background:'#F5DEC399' , padding:'6px 30px', borderRadius:'14px', marginRight:'15px',marginLeft:'15px'}}>Amenities</span>
+    <span className='fw-bold'  style={{background:'#F5DEC399' , padding:'6px 30px', borderRadius:'14px', marginRight:'15px',marginLeft:'15px'}}>Amenities</span>
     
     <input type='text' value={Amenities} onChange={(e)=>setAmenities(e.target.value)} style={{width:'20%', border:'1px solid black' ,borderRadius:'10px',padding:'0 5px'}}/>
 </div>
 
 <div className=' container d-flex justify-content-start mt-5'>
-    <span style={{background:'#F5DEC399' , padding:'6px 24px', borderRadius:'15px', marginRight:'15px'}}>Food Cost</span>
+    <span className='fw-bold'  style={{background:'#F5DEC399' , padding:'6px 24px', borderRadius:'15px', marginRight:'15px'}}>Food Cost</span>
     
     <input type='text' value={Food_Cost} onChange={(e)=>setFood_Cost(e.target.value)} style={{width:'18%', border:'1px solid black' ,borderRadius:'10px',padding:'0 5px'}}/>
 
-    <span style={{background:'#F5DEC399' , padding:'6px 24px', borderRadius:'15px', marginRight:'12px', marginLeft:'15px'}}>Amount Per Head</span>
+    <span className='fw-bold'  style={{background:'#F5DEC399' , padding:'6px 24px', borderRadius:'15px', marginRight:'12px', marginLeft:'15px'}}>Amount Per Head</span>
     
     <input type='text' value={amount} onChange={(e)=>setamount(e.target.value)} style={{width:'17%', border:'1px solid black' ,borderRadius:'10px',padding:'0 5px'}}/>
 
@@ -345,7 +357,7 @@ const Billing = () => {
     
     
     <input type='radio' checked={selectedPaymentMethod === 'UPI'} onChange={(e)=>setselectedPaymentMethod(e.target.value)} name='paymentMethod' value='UPI' style={{width:'5%', border:'1px solid black' ,borderRadius:'10px',marginLeft:'5px'}}/>
-    <span style={{ fontSize:'30px',color:"#6739B7", marginLeft:'-42%'}}><img src='Banner15.webp' style={{height:'30px', width:'90px'}} /></span>
+    <span className='fw-bold'  style={{ fontSize:'30px',color:"#6739B7", marginLeft:'-42%'}}><img src='Banner15.webp' style={{height:'30px', width:'90px'}} /></span>
 
     
     <input type='radio' checked={selectedPaymentMethod === 'Cash'} onChange={(e)=>setselectedPaymentMethod(e.target.value)} name='paymentMethod' value='Cash' style={{width:'5%', border:'1px solid black' ,borderRadius:'10px',marginLeft:'-35%'}}/>
